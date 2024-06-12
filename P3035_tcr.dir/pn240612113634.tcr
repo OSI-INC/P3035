@@ -1,0 +1,5 @@
+#Start recording tcl command: 6/12/2024 11:35:41
+#Project Location: C:/Kevan/A3035/P3035; Project name: P3035
+prj_project open "C:/Kevan/A3035/P3035/P3035.ldf"
+prj_run Map -impl impl1
+#Stop recording: 6/12/2024 11:36:34

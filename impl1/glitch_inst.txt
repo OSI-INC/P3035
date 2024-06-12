@@ -1,0 +1,15 @@
+Potential Glitch can occur at the output of instance i:state_1_s2_0_a2 
+Potential Glitch can occur at the output of instance i:state_1_s3_i 
+Potential Glitch can occur at the output of instance i:fcken 
+Potential Glitch can occur at the output of instance i:Fast_CK.un2_rin 
+Potential Glitch can occur at the output of instance i:Boost_Controller®un9_ck 
+Potential Glitch can occur at the output of instance i:Boost_Controller®un4_ck_0_a2 
+Potential Glitch can occur at the output of instance i:CPU.CPU®un1_prog_data_17 
+Potential Glitch can occur at the output of instance i:CPU.CPU®un1_prog_data_16 
+Potential Glitch can occur at the output of instance i:CPU.CPU®un1_prog_data_15 
+Potential Glitch can occur at the output of instance i:CPU.un1_prog_data_3 
+Potential Glitch can occur at the output of instance i:CPU.un1_opcode_5_0_a2 
+Potential Glitch can occur at the output of instance i:CPU.alu_ctrl_25_i_a2[0] 
+Potential Glitch can occur at the output of instance i:CPU.CPU®un369_state_i_o4 
+Potential Glitch can occur at the output of instance i:CPU.un1_state_7_i_a2 
+Potential Glitch can occur at the output of instance i:CPU.un1_state_20[0] 

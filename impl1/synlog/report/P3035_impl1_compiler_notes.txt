@@ -1,0 +1,34 @@
+@N|Running in 64-bit mode
+@N|Running in 64-bit mode
+@N:"C:\Kevan\A3035\P3035\Main.vhd":18:7:18:10|Top entity is set to main.
+@N: CD140 :	| Using the VHDL 1993 Standard for file 'C:\lscc\diamond\3.12\cae_library\synthesis\vhdl\machxo2.vhd'.
+@N: CD140 :	| Using the VHDL 1993 Standard for file 'C:\Kevan\A3035\P3035\OSR8V3.vhd'.
+@N: CD140 :	| Using the VHDL 1993 Standard for file 'C:\Kevan\A3035\P3035\ROM.vhd'.
+@N: CD140 :	| Using the VHDL 1993 Standard for file 'C:\Kevan\A3035\P3035\RAM.vhd'.
+@N: CD140 :	| Using the VHDL 1993 Standard for file 'C:\Kevan\A3035\P3035\MULT.vhd'.
+@N: CD140 :	| Using the VHDL 1993 Standard for file 'C:\Kevan\A3035\P3035\Entities.vhd'.
+@N: CD140 :	| Using the VHDL 1993 Standard for file 'C:\Kevan\A3035\P3035\Main.vhd'.
+@N: CD630 :"C:\Kevan\A3035\P3035\Main.vhd":19:7:19:10|Synthesizing work.main.behavior.
+@N: CD364 :"C:\Kevan\A3035\P3035\Main.vhd":445:4:445:16|Removing redundant assignment.
+@N: CD364 :"C:\Kevan\A3035\P3035\Main.vhd":448:4:448:16|Removing redundant assignment.
+@N: CD630 :"C:\Kevan\A3035\P3035\OSR8V3.vhd":61:7:61:14|Synthesizing work.osr8_cpu.behavior.
+@N: CD630 :"C:\Kevan\A3035\P3035\MULT.vhd":14:7:14:10|Synthesizing work.mult.structure.
+@N: CD630 :"C:\lscc\diamond\3.12\cae_library\synthesis\vhdl\machxo2.vhd":234:10:234:16|Synthesizing work.fd1p3dx.syn_black_box.
+@N: CD630 :"C:\lscc\diamond\3.12\cae_library\synthesis\vhdl\machxo2.vhd":969:10:969:14|Synthesizing work.mult2.syn_black_box.
+@N: CD630 :"C:\lscc\diamond\3.12\cae_library\synthesis\vhdl\machxo2.vhd":1490:10:1490:12|Synthesizing work.vlo.syn_black_box.
+@N: CD630 :"C:\lscc\diamond\3.12\cae_library\synthesis\vhdl\machxo2.vhd":177:10:177:15|Synthesizing work.fadd2b.syn_black_box.
+@N: CD630 :"C:\lscc\diamond\3.12\cae_library\synthesis\vhdl\machxo2.vhd":64:10:64:13|Synthesizing work.and2.syn_black_box.
+@N: CD630 :"C:\lscc\diamond\3.12\cae_library\synthesis\vhdl\machxo2.vhd":1483:10:1483:12|Synthesizing work.vhi.syn_black_box.
+@N: CD630 :"C:\Kevan\A3035\P3035\ROM.vhd":14:7:14:9|Synthesizing work.rom.structure.
+@N: CD630 :"C:\lscc\diamond\3.12\cae_library\synthesis\vhdl\machxo2.vhd":1699:10:1699:14|Synthesizing work.dp8kc.syn_black_box.
+@N: CD630 :"C:\Kevan\A3035\P3035\RAM.vhd":14:7:14:9|Synthesizing work.ram.structure.
+@N: CD630 :"C:\Kevan\A3035\P3035\Entities.vhd":6:7:6:21|Synthesizing work.ring_oscillator.behavior.
+@N: CD630 :"C:\Kevan\A3035\P3035\Entities.vhd":37:11:37:15|Synthesizing work.bufba.syn_black_box.
+@N: CD630 :"C:\Kevan\A3035\P3035\Entities.vhd":105:7:105:9|Synthesizing work.pcu.structure.
+@N: CD630 :"C:\lscc\diamond\3.12\cae_library\synthesis\vhdl\machxo2.vhd":2163:10:2163:14|Synthesizing work.pcntr.syn_black_box.
+@N: CL201 :"C:\Kevan\A3035\P3035\OSR8V3.vhd":416:2:416:3|Trying to extract state machine for register state.
+@N: CL201 :"C:\Kevan\A3035\P3035\Main.vhd":625:2:625:3|Trying to extract state machine for register state.
+@N: CL201 :"C:\Kevan\A3035\P3035\Main.vhd":461:2:461:3|Trying to extract state machine for register state.
+@N: CL201 :"C:\Kevan\A3035\P3035\Main.vhd":426:2:426:3|Trying to extract state machine for register state.
+@N|Running in 64-bit mode
+

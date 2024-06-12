@@ -1,0 +1,59 @@
+
+Copyright (C) 1994-2021 Synopsys, Inc.
+This Synopsys software and all associated documentation are proprietary to Synopsys, Inc.
+and may only be used pursuant to the terms and conditions of a written license agreement
+with Synopsys, Inc. All other use, reproduction, modification, or distribution of the
+Synopsys software or the associated documentation is strictly prohibited.
+Tool: Synplify Pro (R)
+Build: R-2021.03L-SP1
+Install: C:\lscc\diamond\3.12\synpbase
+OS: Windows 6.1
+
+Hostname: VMBOX_WINDOWS7
+
+Implementation : impl1
+
+# Written on Wed Jun 12 11:35:51 2024
+
+##### FILES SYNTAX CHECKED ##############################################
+Constraint File(s):      (none)
+
+#Run constraint checker to find more issues with constraints.
+#########################################################################
+
+
+
+No issues found in constraint syntax.
+
+
+
+Clock Summary
+*************
+
+          Start                   Requested     Requested     Clock                                  Clock                   Clock
+Level     Clock                   Frequency     Period        Type                                   Group                   Load 
+----------------------------------------------------------------------------------------------------------------------------------
+0 -       System                  1.0 MHz       1000.000      system                                 system_clkgroup         1    
+                                                                                                                                  
+0 -       ring_oscillator|RIN     1.0 MHz       1000.000      inferred                               Inferred_clkgroup_1     5    
+1 .         main|FCK              1.0 MHz       1000.000      derived (from ring_oscillator|RIN)     Inferred_clkgroup_1     9    
+2 ..          main|TCK_1          1.0 MHz       1000.000      derived (from main|FCK)                Inferred_clkgroup_1     390  
+                                                                                                                                  
+0 -       main|RCK                1.0 MHz       1000.000      inferred                               Inferred_clkgroup_0     327  
+==================================================================================================================================
+
+
+Clock Load Summary
+******************
+
+                        Clock     Source                       Clock Pin         Non-clock Pin       Non-clock Pin    
+Clock                   Load      Pin                          Seq Example       Seq Example         Comb Example     
+----------------------------------------------------------------------------------------------------------------------
+System                  1         -                            CPU.alu_cin.C     -                   -                
+                                                                                                                      
+ring_oscillator|RIN     5         Fast_CK.un2_rin.OUT(and)     Fast_CK.CK.C      -                   -                
+main|FCK                9         Fast_CK.CK.Q[0](dff)         TCK.C             -                   un1_FCK.I[0](inv)
+main|TCK_1              390       TCK.Q[0](dff)                INTCTRZ.C         -                   TCK_2.I[0](inv)  
+                                                                                                                      
+main|RCK                327       RCK(port)                    CLRFLAG.C         state_1[0].D[0]     CK.I[0](keepbuf) 
+======================================================================================================================
