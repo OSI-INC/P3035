@@ -1,7 +1,0 @@
-C:\lscc\diamond\3.12\synpbase\bin64\syn_nfilter.exe  -link  -top  work.main  -multisrs  C:\Kevan\A3035\P3035\impl1\synwork\P3035_impl1_comp.srs  -osyn  C:\Kevan\A3035\P3035\impl1\synwork\P3035_impl1_mult.srs  -log  C:\Kevan\A3035\P3035\impl1\synlog\P3035_impl1_multi_srs_gen.srr 
-relcom:..\..\..\..\..\lscc\diamond\3.12\synpbase\bin64\syn_nfilter.exe -link -top work.main -multisrs ..\synwork\P3035_impl1_comp.srs -osyn ..\synwork\P3035_impl1_mult.srs -log ..\synlog\P3035_impl1_multi_srs_gen.srr
-rc:0 success:1 runtime:0
-file:..\synwork\P3035_impl1_comp.srs|io:i|time:1718206549|size:62105|exec:0|csum:50EDBC80EFA04F9626276A53C5FECEC1
-file:..\synwork\P3035_impl1_mult.srs|io:o|time:1718206551|size:22239|exec:0|csum:
-file:..\synlog\P3035_impl1_multi_srs_gen.srr|io:o|time:1718206551|size:1040|exec:0|csum:
-file:..\..\..\..\..\lscc\diamond\3.12\synpbase\bin64\syn_nfilter.exe|io:i|time:1628601758|size:8899584|exec:1|csum:163057E8B8449A642661642A20A2247D
