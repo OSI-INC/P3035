@@ -117,18 +117,18 @@ jp initialize
 jp interrupt
 
 ; ------------------------------------------------------------
-; Configure the accelerometer.
+; Configure the accelerometer. We do not perform the initialization
+; suggested by the BMA423 data sheet, where we write six kilobytes
+; of configuration data to the device. Instead, we write to the power
+; configuration register, then the power control register, then wait
+; for a time greater than 500 us, then set the update rate and 
+; measurement range. Beware changing the order of the first two 
+; writes and the delay. The accelerometer can deliver zeros if we
+; deviate from the correct sequence.
 
 acc_config:
 push F
 push A  
-
-ld A,acc_pwr_ctrl  ; Load A with power control register address.
-ld (mmu_sar),A 	   ; Write A to sensor address register.
-ld A,acc_daq       ; Load A with power control code.
-ld (mmu_slb),A     ; Write A to sensor low byte.
-ld A,acc_wr8	   ; Load A with eight-bit write command.
-ld (mmu_scr),A 	   ; Write A to sensor control register.
 
 ld A,acc_pwr_conf  ; Load A with power configuration register address.
 ld (mmu_sar),A     ; Write A to sensor address register.
@@ -136,6 +136,13 @@ ld A,acc_pwr_sv    ; Load A with power configuration code.
 ld (mmu_slb),A     ; Write A to sensor low byte.
 ld A,acc_wr8	   ; Load A with eight-bit write command.
 ld (mmu_scr),A     ; Write A to sensor control register.
+
+ld A,acc_pwr_ctrl  ; Load A with power control register address.
+ld (mmu_sar),A 	   ; Write A to sensor address register.
+ld A,acc_daq       ; Load A with power control code.
+ld (mmu_slb),A     ; Write A to sensor low byte.
+ld A,acc_wr8	   ; Load A with eight-bit write command.
+ld (mmu_scr),A 	   ; Write A to sensor control register.
 
 ld A,acc_startup   ; Load A with accelerometer start-up delay.
 dly A              ; Wait for accelerometer to complete startup.

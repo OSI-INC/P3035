@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<DiamondModule name="ROM" module="ROM" VendorName="Lattice Semiconductor Corporation" generator="IPexpress" date="2024 06 24 17:33:22.680" version="5.4" type="Module" synthesis="synplify" source_format="VHDL">
+<DiamondModule name="ROM" module="ROM" VendorName="Lattice Semiconductor Corporation" generator="IPexpress" date="2024 06 24 19:11:13.401" version="5.4" type="Module" synthesis="synplify" source_format="VHDL">
   <Package>
-		<File name="" type="" modified="2024 06 24 17:33:22.555"/>
-		<File name="ROM.lpc" type="lpc" modified="2024 06 24 17:33:21.573"/>
-		<File name="ROM.vhd" type="top_level_vhdl" modified="2024 06 24 17:33:21.635"/>
-		<File name="ROM_tmpl.vhd" type="template_vhdl" modified="2024 06 24 17:33:21.635"/>
-		<File name="c:/kevan/a3035/p3035/rom.mem" type="mem" modified="2024 06 24 17:30:30.954"/>
-		<File name="tb_ROM_tmpl.vhd" type="testbench_vhdl" modified="2024 06 24 17:33:21.635"/>
+		<File name="" type="" modified="2024 06 24 19:11:13.125"/>
+		<File name="ROM.lpc" type="lpc" modified="2024 06 24 19:11:12.103"/>
+		<File name="ROM.vhd" type="top_level_vhdl" modified="2024 06 24 19:11:12.168"/>
+		<File name="ROM_tmpl.vhd" type="template_vhdl" modified="2024 06 24 19:11:12.168"/>
+		<File name="c:/kevan/a3035/p3035/rom.mem" type="mem" modified="2024 06 24 19:11:06.636"/>
+		<File name="tb_ROM_tmpl.vhd" type="testbench_vhdl" modified="2024 06 24 19:11:12.184"/>
   </Package>
 </DiamondModule>
