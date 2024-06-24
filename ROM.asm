@@ -1,15 +1,20 @@
-; Implantable Inertial Sensor (IIS) Program (C3035A-V2)
-; ------------------------------------------------------
+; Implantable Inertial Sensor (IIS) Program Version 2.4
+; -----------------------------------------------------
 
-; This code runs in the OSR8 microprocessor of the A3035A, reading
-; out the gyroscope and accelerometer at 128 SPS, transmitting the
-; six values as unsigned sixteen-bit integers in an order that provides
-; rotation and acceleration in a shared coordinate system.
+; This code runs in the OSR8 microprocessor of the A3035A. It reads out
+; the accelerometer at 128 SPS per axis. If we enable the gyroscope, it
+; turns on the gyroscope and reads it out at 128 SPS as well. Each sensor 
+; produces three channels of telemetry data, each sample is an unsigned 
+; sixteen-bit integer. The coordinates of the sensors are re-arranged so 
+; that their directions are aligned.
+
+; Configuration constants
+const gyr_en         0x00 ; Turn on and transmit gyroscope measurements.
 
 ; Calibration Constants
-const tx_frequency      6  ; Transmit frequency calibration
-const device_id        17  ; Will be used as the first channel number.
-const sample_period     0  ; Sample period in units of RCK periods, use 0 for 256.
+const tx_frequency      5 ; Transmit frequency calibration
+const device_id         7 ; Will be used as the first channel number.
+const sample_period     0 ; Sample period in units of RCK periods, use 0 for 256.
 
 ; Address Map Boundary Constants
 const mmu_vmem 0x0000 ; Base of Variable Memory
@@ -67,29 +72,30 @@ const gyr_y				  0x14
 const acc_x				  0x12
 const acc_y  			  0x14
 const acc_z 			  0x16
-const gyr_startup		  0x7E
+const gyr_cmd		      0x7E
 const gyr_rng 			  0x43
-const acc_pwr_cntrl		  0x7D
+const acc_pwr_ctrl        0x7D ; PWR_CTRL register address.
 const acc_rng             0x41
-const acc_pwr_conf        0x7C
+const acc_pwr_conf        0x7C ; PWR_CONF register address.
 const acc_features_in     0x5E
-const acc_init_ctrl       0x59
+const acc_init_ctrl       0x59 
 const acc_internal_status 0x2A
-const acc_perf_mode		  0x40
+const acc_conf            0x40 ; ACC_CONF register address.
 
 ; Configuration Constants
 const tk_divisor    	12     ; Number of ring periods per 100 ns.
 const acc_init_cntr 	0x0C00 ; Value for HL to count down from.
 const min_tcf       	75     ; Minimum TCK periods per half RCK period.
-const gyr_normal		0x15   ; Normal startup constant.
-const gyr_susp          0x14   ; Gyroscope suspend mode.
-const gyr_rng_hi 		0x00   ; this transmits largest range data value for gyr
-const gyr_rng_lo		0x03   ; This transmits smallest range data value for gyr
-const gyr_rng_mid		0x01   ; This transmits mid range data value for gyr
-const acc_rng_hi 		0x03   ; This transmits mid range data value for acc
-const acc_odr           0x19   ; Output data rate 200hz, continous filter function
-const acc_daq			0x04   ; Enable acc DAQ
-const acc_pwr_sv		0x03   ; Self-start fifo and adv power save
+const gyr_normal		0x15   ; Normal operation code.
+const gyr_susp          0x14   ; Suspend operation code.
+const gyr_rng_hi 		0x00   ; Code for largest range data value for gyr
+const gyr_rng_lo		0x03   ; Code for smallest range data value for gyr
+const gyr_rng_mid		0x01   ; Code for mid range data value for gyr
+const acc_rng_hi 		0x03   ; Code for mid range data value for acc
+const acc_25hz          0x06   ; Output data rate 100 Hz, no averaging, no filter
+const acc_100hz         0x08   ; Output data rate 100 Hz, no averaging, no filter
+const acc_daq			0x04   ; Enable accelerometer data acquisition.
+const acc_pwr_sv		0x03   ; Advanced power save and fifo self-start.
 
 ; Timing consstants.
 const tx_delay      50  ; Wait time for sample transmission, TCK periods.
@@ -111,136 +117,76 @@ jp initialize
 jp interrupt
 
 ; ------------------------------------------------------------
+; Configure the accelerometer.
 
-; Configure the gyroscope.
-
-configure_gyroscope:
-push F
-push A             
-ld A,gyr_startup   ; Load A with normal startup configuration register
-ld (mmu_sar),A     ; write startup location to sensor adress register
-ld A, gyr_susp     ; load A with gyr_susp mode 
-ld (mmu_slb),A     ; Load sensor low byte with gyr suspend byte
-ld A,gy_wr8		   ; Write 8 bit write command to A
-ld (mmu_scr),A     ; Load sensor control register with gyr suspend mode
-ld A,gyr_normal    ; Load A with gyr normal startup mode
-ld (mmu_slb),A     ; Load sensor low byte with gyr normal byte
-ld A,gy_wr8		   ; Write 8 bit write command to A
-ld (mmu_scr),A     ; Load sensor control register with gyr normal command
-ld A,gyr_rng       ; Load a with gyr_range control register
-ld (mmu_sar),A     ; write range control register to sensor adress register
-ld A,gyr_rng_hi    ; load A with least sensitive gyr_rng setting
-ld (mmu_slb),A     ; load sensor low byte with A
-ld A,gy_wr8        ; load 8 bite write command to A
-ld (mmu_scr),A     ; load sensor control register with write command
-pop A
-pop F   
-ret  
-
-; ------------------------------------------------------------
-
-acc_startup_configuration:
+acc_config:
 push F
 push A  
-ld A,acc_pwr_conf  ; load A with power settings register adress
-ld (mmu_sar),A     ; load sensor address register with power settings register
-ld A,acc_pwr_sv    ; load A with self start fifo and adv power save setting
-ld (mmu_slb),A     ; loaded into lo byte
-ld A,acc_wr8	   ; load A with write command
-ld (mmu_scr),A     ; load control register with write command
-ld A,acc_pwr_cntrl ; load the the accelerometer low power register location
-ld (mmu_sar),A 	   ; load the register location to sensor adress register
-ld A,acc_daq       ; Load a with accelerometer sensor enable command
-ld (mmu_slb),A     ; write lo byte to tell awith accelerometer enabled
-ld A,acc_wr8	   ; load 8 bit write command
-ld (mmu_scr),A 	   ; write command to sensor control register
-ld A,acc_startup   ; load A with accelerometer start-up delay.
-dly A              ; and wait.
-ld A,acc_perf_mode ; load A perfomance mode register location
-ld (mmu_sar),A     ; performance mode register location
-ld A,acc_odr       ; load A with odr 200hz
-ld (mmu_slb),A     ; load low byte with odr setting
-ld A,acc_wr8       ; load A with 8 byte write command 
-ld (mmu_scr),A     ; load sensor control register with write command
-ld A,acc_rng	   ; load A with data output range register 
-ld (mmu_sar),A 	   ; loaded to sensor adress register
-ld A,acc_rng_hi    ; load A with acc range
-ld (mmu_slb),A 	   ; load low byte with acc range setting
-ld A,acc_wr8       ; load A with write command
-ld (mmu_scr),A 	   ; word command written
+
+ld A,acc_pwr_ctrl  ; Load A with power control register address.
+ld (mmu_sar),A 	   ; Write A to sensor address register.
+ld A,acc_daq       ; Load A with power control code.
+ld (mmu_slb),A     ; Write A to sensor low byte.
+ld A,acc_wr8	   ; Load A with eight-bit write command.
+ld (mmu_scr),A 	   ; Write A to sensor control register.
+
+ld A,acc_pwr_conf  ; Load A with power configuration register address.
+ld (mmu_sar),A     ; Write A to sensor address register.
+ld A,acc_pwr_sv    ; Load A with power configuration code.
+ld (mmu_slb),A     ; Write A to sensor low byte.
+ld A,acc_wr8	   ; Load A with eight-bit write command.
+ld (mmu_scr),A     ; Write A to sensor control register.
+
+ld A,acc_startup   ; Load A with accelerometer start-up delay.
+dly A              ; Wait for accelerometer to complete startup.
+
+ld A,acc_conf      ; Load A with configuration register address.
+ld (mmu_sar),A     ; Write A to sensor address register.
+ld A,acc_100hz     ; Load A with chosen configuration code.
+ld (mmu_slb),A     ; Write A to sensor low byte.
+ld A,acc_wr8       ; Load A with eight-bit write command.
+ld (mmu_scr),A     ; Write A to sensor control register.
+
+ld A,acc_rng	   ; Load A with range register address.
+ld (mmu_sar),A 	   ; Write A to sensor address register.
+ld A,acc_rng_hi    ; Load A with acceleromter range code.
+ld (mmu_slb),A 	   ; Write A to sensor low byte.
+ld A,acc_wr8       ; Load A with eight-bit write command.
+ld (mmu_scr),A 	   ; Write A to sensor control register.
+
 pop A            
 pop F 
 ret               
 
 ; ------------------------------------------------------------
-; Gyroscope sample transmit routines.
+; Configure the gyroscope.
 
-xmit_gy_x:
+gyr_config:
 push F
-push A     
-ld (mmu_xcn),A   ; Write the channel offset
-ld A,gyr_x	     ; Load A with timer byte one address
-ld (mmu_sar),A   ; Write address to sensor address register
-ld A,gy_rd16     ; Load A with gyroscope sixteen-bit read command
-ld (mmu_scr),A   ; Send command to sensor controller
-ld A,sa_delay    ; Load A with the sensor access delay
-dly A            ; and wait for sensor access to complete.
-ld A,(mmu_shb)   ; Read sensor HI byte into A
-add A,off_16bs   ; Add offset to negative values
-ld (mmu_xhb),A   ; Write sensor HI byte to transmit HI byte
-ld A,(mmu_slb)   ; Read sensor LO byte into A
-ld (mmu_xlb),A   ; Write sensor LO byte to transmit LO byte
-ld (mmu_xcr),A   ; Any write to transmit control register
-ld A,tx_delay    ; Load A with the sample transmission delay
-dly A            ; and wait for sample transmission to complete.
-pop A   
-pop F
-ret 
-
-xmit_gy_y:
-push F
-push A          
-ld (mmu_xcn),A   ; Write the channel offset
-ld A,gyr_y	     ; Load A with timer byte one address
-ld (mmu_sar),A   ; Write address to sensor address register
-ld A,gy_rd16     ; Load A with gyroscope sixteen-bit read command
-ld (mmu_scr),A   ; Send command to sensor controller
-ld A,sa_delay    ; Load A with the sensor access delay
-dly A            ; and wait for sensor access to complete.
-ld A,(mmu_shb)   ; Read sensor HI byte into A
-add A,off_16bs   ; Add offset to negative values
-ld (mmu_xhb),A   ; Write sensor HI byte to transmit HI byte
-ld A,(mmu_slb)   ; Read sensor LO byte into A
-ld (mmu_xlb),A   ; Write sensor LO byte to transmit LO byte
-ld (mmu_xcr),A   ; Any write to transmit control register
-ld A,tx_delay    ; Load A with the sample transmission delay
-dly A            ; and wait for sample transmission to complete.
-pop A 
-pop F          
-ret     
-
-xmit_gy_z:
-push F
-push A           
-ld (mmu_xcn),A   ; Write the channel offset
-ld A,gyr_z	     ; Load A with timer byte one address
-ld (mmu_sar),A   ; Write address to sensor address register
-ld A,gy_rd16     ; Load A with gyroscope sixteen-bit read command
-ld (mmu_scr),A   ; Send command to sensor controller
-ld A,sa_delay    ; Load A with the sensor access delay
-dly A            ; and wait for sensor access to complete.
-ld A,(mmu_shb)   ; Read sensor HI byte into A
-add A,off_16bs   ; Add offset to negative values
-ld (mmu_xhb),A   ; Write sensor HI byte to transmit HI byte
-ld A,(mmu_slb)   ; Read sensor LO byte into A
-ld (mmu_xlb),A   ; Write sensor LO byte to transmit LO byte
-ld (mmu_xcr),A   ; Any write to transmit control register
-ld A,tx_delay    ; Load A with the sample transmission delay
-dly A            ; and wait for sample transmission to complete.
-pop A           
-pop F
-ret              
-
+push A             
+ld A,gyr_cmd       ; Load A with command register address.
+ld (mmu_sar),A     ; Write A to sensor address register.
+ld A,gyr_susp      ; Load A with suspend mode command.
+ld (mmu_slb),A     ; Write A to sensor low byte.
+ld A,gy_wr8		   ; Load A with eight-bit write command.
+ld (mmu_scr),A     ; Write A to sensor control register.
+ld A,gyr_en        ; Check to see if gyroscope should be
+and A,0xFF         ; enabled, and if so, enable it,
+jp z,cfgy_suspend  ; otherwise don't.
+ld A,gyr_normal    ; Load A with normal mode command.
+ld (mmu_slb),A     ; Write A to sensor low byte.
+ld A,gy_wr8		   ; Load A with eight-bit write command.
+ld (mmu_scr),A     ; Write A to sensor control register.
+cfgy_suspend:
+ld A,gyr_rng       ; Load A with gyroscope range register address.
+ld (mmu_sar),A     ; Write A to sensor adress register.
+ld A,gyr_rng_hi    ; Load A with a gyroscope range value.
+ld (mmu_slb),A     ; Write A to sensor low byte.
+ld A,gy_wr8        ; Load A with eight-bit write command.
+ld (mmu_scr),A     ; Wirte A to sensor control register.
+pop A
+pop F   
+ret  
 
 ; ------------------------------------------------------------
 ; Accelerometer sample transmit routines.
@@ -316,6 +262,75 @@ pop F
 ret              
 
 ; ------------------------------------------------------------
+; Gyroscope sample transmit routines.
+
+xmit_gy_x:
+push F
+push A     
+ld (mmu_xcn),A   ; Write the channel offset
+ld A,gyr_x	     ; Load A with timer byte one address
+ld (mmu_sar),A   ; Write address to sensor address register
+ld A,gy_rd16     ; Load A with gyroscope sixteen-bit read command
+ld (mmu_scr),A   ; Send command to sensor controller
+ld A,sa_delay    ; Load A with the sensor access delay
+dly A            ; and wait for sensor access to complete.
+ld A,(mmu_shb)   ; Read sensor HI byte into A
+add A,off_16bs   ; Add offset to negative values
+ld (mmu_xhb),A   ; Write sensor HI byte to transmit HI byte
+ld A,(mmu_slb)   ; Read sensor LO byte into A
+ld (mmu_xlb),A   ; Write sensor LO byte to transmit LO byte
+ld (mmu_xcr),A   ; Any write to transmit control register
+ld A,tx_delay    ; Load A with the sample transmission delay
+dly A            ; and wait for sample transmission to complete.
+pop A   
+pop F
+ret 
+
+xmit_gy_y:
+push F
+push A          
+ld (mmu_xcn),A   ; Write the channel offset
+ld A,gyr_y	     ; Load A with timer byte one address
+ld (mmu_sar),A   ; Write address to sensor address register
+ld A,gy_rd16     ; Load A with gyroscope sixteen-bit read command
+ld (mmu_scr),A   ; Send command to sensor controller
+ld A,sa_delay    ; Load A with the sensor access delay
+dly A            ; and wait for sensor access to complete.
+ld A,(mmu_shb)   ; Read sensor HI byte into A
+add A,off_16bs   ; Add offset to negative values
+ld (mmu_xhb),A   ; Write sensor HI byte to transmit HI byte
+ld A,(mmu_slb)   ; Read sensor LO byte into A
+ld (mmu_xlb),A   ; Write sensor LO byte to transmit LO byte
+ld (mmu_xcr),A   ; Any write to transmit control register
+ld A,tx_delay    ; Load A with the sample transmission delay
+dly A            ; and wait for sample transmission to complete.
+pop A 
+pop F          
+ret     
+
+xmit_gy_z:
+push F
+push A           
+ld (mmu_xcn),A   ; Write the channel offset
+ld A,gyr_z	     ; Load A with timer byte one address
+ld (mmu_sar),A   ; Write address to sensor address register
+ld A,gy_rd16     ; Load A with gyroscope sixteen-bit read command
+ld (mmu_scr),A   ; Send command to sensor controller
+ld A,sa_delay    ; Load A with the sensor access delay
+dly A            ; and wait for sensor access to complete.
+ld A,(mmu_shb)   ; Read sensor HI byte into A
+add A,off_16bs   ; Add offset to negative values
+ld (mmu_xhb),A   ; Write sensor HI byte to transmit HI byte
+ld A,(mmu_slb)   ; Read sensor LO byte into A
+ld (mmu_xlb),A   ; Write sensor LO byte to transmit LO byte
+ld (mmu_xcr),A   ; Any write to transmit control register
+ld A,tx_delay    ; Load A with the sample transmission delay
+dly A            ; and wait for sample transmission to complete.
+pop A           
+pop F
+ret              
+
+; ------------------------------------------------------------
 ; Calibrate the transmit clock frequency. Will leave the
 ; transmit clock disabled and cpu boost turned off.
 calibrate_tck:
@@ -346,10 +361,11 @@ pop F
 ret              
 
 ; ------------------------------------------------------------
-; The interrupt routine. Transmits all six measurements, gyrsoscop
-; then accelerometer. The sensor axis order we retain for the 
-; gyroscope but we flip y and x for the accelerometer so that
-; the two sensor axes coincide with respect to the device body.
+; The interrupt routine. Transmits all required measurements,
+; accelerometer first, then gyroscope if enabled. The sensor 
+; axis order we retain for the gyroscope but we flip y and x 
+; for the accelerometer so that the two sensor axes coincide 
+; with respect to the device body.
 interrupt:
 push F              ; Save the flags onto the stack.
 push A              ; Save A on stack
@@ -364,17 +380,22 @@ ld (mmu_etc),A      ; Enable the transmit clock, TCK.
 ld (mmu_bcc),A      ; Boost the CPU clock to TCK.
 
 ld A,device_id      ; This device id is first channel number.
-call xmit_gy_x      ; Transmit gyroscope x-axis
-inc A               ; Increment channel number.
-call xmit_gy_y      ; Transmit gyroscope y-axis
-inc A               ; Increment channel number.
-call xmit_gy_z      ; Transmit gyroscope z-axis.
-inc A               ; Increment channel number.
 call xmit_acc_y     ; Transmit accelerometer y-axis.
 inc A               ; Increment channel number.
 call xmit_acc_x     ; Transmit accelerometer x-axis.
 inc A               ; Increment channel number.
 call xmit_acc_z     ; Transmit accelerometer z-axis.
+inc A               ; Increment channel number.
+
+ld A,gyr_en         ; If the gyroscope is enabled,
+and A,0xFF          ; transmit its three coordinates,
+jp z,int_gydis      ; otherwise don't.
+call xmit_gy_x      ; Transmit gyroscope x-axis
+inc A               ; Increment channel number.
+call xmit_gy_y      ; Transmit gyroscope y-axis
+inc A               ; Increment channel number.
+call xmit_gy_z      ; Transmit gyroscope z-axis.
+int_gydis:
 
 ld A,0x00           ; Clear bit zero to zero.
 ld (mmu_bcc),A      ; Move CPU back to slow RCK.
@@ -416,8 +437,8 @@ ld A,tx_frequency
 ld (mmu_xfc),A
 
 ; Configure the gyroscope and accelerometer
-call configure_gyroscope
-call acc_startup_configuration
+call gyr_config
+call acc_config
 
 ; Set interrupt timer interval and enable the timer interrupt to implement
 ; the sample period. The value we want to load into the interrup timer period 
