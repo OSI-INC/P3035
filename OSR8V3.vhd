@@ -112,7 +112,8 @@ architecture behavior of OSR8_CPU is
 	constant cpu_wt   : integer := 16#0C#; -- wait
 	constant clr_iflg : integer := 16#0D#; -- clri
 	constant set_iflg : integer := 16#0E#; -- seti
-	
+	constant ex_A_B   : integer := 16#2A#; -- ex A,B
+
 	constant ld_A_n   : integer := 16#10#; -- ld A,n
 	constant ld_IX_nn : integer := 16#11#; -- ld IX,nn
 	constant ld_IY_nn : integer := 16#12#; -- ld IY,nn
@@ -149,7 +150,7 @@ architecture behavior of OSR8_CPU is
 	constant pop_F    : integer := 16#37#; -- pop F
 	constant pop_IX   : integer := 16#38#; -- pop IX
 	constant pop_IY   : integer := 16#39#; -- pop IY
-
+	
 	constant add_A_B  : integer := 16#40#; -- add A,B
 	constant add_A_n  : integer := 16#41#; -- add A,n
 	constant adc_A_B  : integer := 16#42#; -- adc A,B
@@ -800,6 +801,12 @@ begin
 				when rl_A | rlc_A | rr_A | rrc_A | sla_A | sra_A | srl_A =>
 					next_A := alu_out;
 					next_flag_C := alu_cout;
+					next_state := read_opcode;
+					next_pc := std_logic_vector(unsigned(prog_cntr)+1);
+					
+				when ex_A_B =>
+					next_A := reg_B;
+					next_B := reg_A;
 					next_state := read_opcode;
 					next_pc := std_logic_vector(unsigned(prog_cntr)+1);
 					
