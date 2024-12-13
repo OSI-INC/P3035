@@ -12,8 +12,8 @@
 const gyr_en         0x00 ; Turn on and transmit gyroscope measurements.
 
 ; Calibration Constants
-const tx_frequency      5 ; Transmit frequency calibration
-const device_id         7 ; Will be used as the first channel number.
+const tx_frequency      4 ; Transmit frequency calibration
+const device_id         4 ; Will be used as the first channel number.
 const sample_period     0 ; Sample period in units of RCK periods, use 0 for 256.
 
 ; Address Map Boundary Constants
@@ -57,7 +57,7 @@ const gy_wr8     0x03 ; Write Eight-Bit Byte to Gyroscope
 const acc_rd16   0x04 ; Read Sixteen-Bit Word from Accelerometer
 const acc_wr16   0x06 ; Write Sixteen-Bit Word to Accelerometer
 const acc_rd8    0x00 ; Read Eight-Bit Byte from Accelerometer
-const acc_wr8    0x02 ; Write Eight-Bit Byte to Gyroscope
+const acc_wr8    0x02 ; Write Eight-Bit Byte to Accelerometer
 
 ; Sensor Registers Locations
 const gyr_sens_tmr_0      0x17
@@ -201,7 +201,7 @@ ret
 xmit_acc_x:
 push F
 push A          
-ld (mmu_xcn),A   ; Write the channel offset
+ld (mmu_xcn),A   ; Write the channel number
 ld A,acc_x	     ; Load A with acc_x byte one address
 ld (mmu_sar),A   ; Write address to sensor address register
 ld A,acc_rd16    ; Load A with accelerometer sixteen-bit read command
@@ -223,7 +223,7 @@ ret
 xmit_acc_y:
 push F
 push A           
-ld (mmu_xcn),A   ; Write the channel offset
+ld (mmu_xcn),A   ; Write the channel number
 ld A,acc_y	     ; Load A with acc_y byte one address
 ld (mmu_sar),A   ; Write address to sensor address register
 ld A,acc_rd16    ; Load A with accelerometer sixteen-bit read command
@@ -245,7 +245,7 @@ ret
 xmit_acc_z:
 push F
 push A           
-ld (mmu_xcn),A   ; Write the channel offset
+ld (mmu_xcn),A   ; Write the channel number
 ld A,acc_z	     ; Load A with acc_z byte one address
 ld (mmu_sar),A   ; Write address to sensor address register
 ld A,acc_rd16    ; Load A with accelerometer sixteen-bit read command
@@ -274,7 +274,7 @@ ret
 xmit_gy_x:
 push F
 push A     
-ld (mmu_xcn),A   ; Write the channel offset
+ld (mmu_xcn),A   ; Write the channel number
 ld A,gyr_x	     ; Load A with timer byte one address
 ld (mmu_sar),A   ; Write address to sensor address register
 ld A,gy_rd16     ; Load A with gyroscope sixteen-bit read command
@@ -296,7 +296,7 @@ ret
 xmit_gy_y:
 push F
 push A          
-ld (mmu_xcn),A   ; Write the channel offset
+ld (mmu_xcn),A   ; Write the channel number
 ld A,gyr_y	     ; Load A with timer byte one address
 ld (mmu_sar),A   ; Write address to sensor address register
 ld A,gy_rd16     ; Load A with gyroscope sixteen-bit read command
@@ -318,7 +318,7 @@ ret
 xmit_gy_z:
 push F
 push A           
-ld (mmu_xcn),A   ; Write the channel offset
+ld (mmu_xcn),A   ; Write the channel number
 ld A,gyr_z	     ; Load A with timer byte one address
 ld (mmu_sar),A   ; Write address to sensor address register
 ld A,gy_rd16     ; Load A with gyroscope sixteen-bit read command

@@ -11,6 +11,10 @@
 
 -- V2.4, 31-MAY-24: Correct and expand comments.
 
+-- V2.5, 13-DEC-24: Import improvements to PowerUp process from Blood Pressure Monitor firmware 
+-- (P3051). We use falling edge of RCK to advance the power-up state. We have initial states for
+-- the RESET and other registered power-up signals.
+
 library ieee;  
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
@@ -86,9 +90,11 @@ architecture behavior of main is
 	attribute nomerge : string;
 
 -- Power Controller
-	signal USERSTDBY, CLRFLAG, SFLAG, STDBY, RESET : std_logic;
+	signal USERSTDBY, CLRFLAG : std_logic := '0';
+	signal RESET : std_logic := '1';
 	attribute syn_keep of RESET : signal is true;
 	attribute nomerge of RESET : signal is "";
+	signal SFLAG, STDBY : std_logic;
 	signal SWRST : boolean := false;
 	
 -- Ring Oscillator and Transmit Clock
@@ -214,7 +220,7 @@ begin
 		constant end_state : integer := 7;
 		variable state : integer range 0 to end_state := 0;
 	begin
-		if rising_edge(RCK) then
+		if falling_edge(RCK) then
 			CLRFLAG <= to_std_logic(state = 1);
 			USERSTDBY <= to_std_logic(state >= 3);
 			RESET <= to_std_logic((state < end_state) or SWRST);
