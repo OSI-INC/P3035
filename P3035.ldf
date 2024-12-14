@@ -19,7 +19,7 @@
             <Options/>
         </Source>
         <Source name="Main.vhd" type="VHDL" type_short="VHDL">
-            <Options/>
+            <Options top_module="main"/>
         </Source>
         <Source name="P3035.lpf" type="Logic Preference" type_short="LPF">
             <Options/>

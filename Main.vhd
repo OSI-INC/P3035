@@ -12,8 +12,7 @@
 -- V2.4, 31-MAY-24: Correct and expand comments.
 
 -- V2.5, 13-DEC-24: Import improvements to PowerUp process from Blood Pressure Monitor firmware 
--- (P3051). We use falling edge of RCK to advance the power-up state. We have initial states for
--- the RESET and other registered power-up signals.
+-- (P3051). Disable RESET of RAM and ROM.
 
 library ieee;  
 use ieee.std_logic_1164.all;
@@ -215,25 +214,27 @@ begin
 		STDBY => STDBY,
 		SFLAG => SFLAG);	
 
--- The Power-Up process 
+-- The Power-Up Process. We have CLRFLAG and USERSTDBY cleared LO on power-up,
+-- and RESET set HI. When RCK starts up, we use it to move the chip into 
+-- standby mode. We unassert RESET once we receive SFLAG from the Power Control 
+-- Unit (PCU).
 	PowerUp: process (RCK) is
 		constant end_state : integer := 7;
+		constant clr_state : integer := 3;
+		constant stdby_state : integer := clr_state + 2;
 		variable state : integer range 0 to end_state := 0;
 	begin
 		if falling_edge(RCK) then
-			CLRFLAG <= to_std_logic(state = 1);
-			USERSTDBY <= to_std_logic(state >= 3);
+			CLRFLAG <= to_std_logic(state = clr_state);
+			USERSTDBY <= to_std_logic(state >= stdby_state);
 			RESET <= to_std_logic((state < end_state) or SWRST);
 
-			if (state = 0) then state := 1;
-			elsif (state = 1) then state := 2;
-			elsif (state = 2) then state := 3;
-			elsif (SFLAG = '0') then state := 3;
+			if (state < stdby_state) then state := state + 1;
+			elsif (SFLAG = '0') then state := stdby_state;
 			elsif (state < end_state) then state := state + 1; 
 			else state := end_state; end if;
 		end if;
 	end process;
-	
 	
 -- Ring Oscillator. This oscillator runs euring message transmission, sensor configuration,
 -- sensor readout, and when ordered to do so by the CPU using the ENTCK flag. The ring oscillator
@@ -261,7 +262,7 @@ begin
 	Process_Memory : entity RAM port map (
 		Clock => not CK,
 		ClockEn => '1',
-        Reset => RESET,
+        Reset => '0',
 		WE => RAMWR,
 		Address => ram_addr, 
 		Data => ram_in,
@@ -275,7 +276,7 @@ begin
 		Address => prog_addr,
         OutClock => not CK,
         OutClockEn => '1',
-        Reset => RESET,	
+        Reset => '0',	
         Q => prog_data);
 
 -- The eight-bit multiplier takes two eight-bit numbers and produces their sixteen-
@@ -285,7 +286,7 @@ begin
 	Multiplier : entity MULT port map (
 		Clock => not CK,
 		ClkEn => '1',
-		Aclr => RESET,
+		Aclr => '0',
 		DataA => cpu_multiplier_a,
 		DataB => cpu_multiplier_b,
 		Result => cpu_multiplier_out);
