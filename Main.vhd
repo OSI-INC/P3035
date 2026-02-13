@@ -1,6 +1,7 @@
 -- <pre> Implantable Inertial Sensor (IIS, A3035) Firmware, Toplevel Unit
 
--- V2.1, 15-JUL-22: Move to the OSR8V3. Add a flag to disable the multiplier so we can be sure variants of the-- OSR8 fit in the device. The initial stack pointer is now available at mmu_sph and mmu_spl locations, HI and LO 
+-- V2.1, 15-JUL-22: Move to the OSR8V3. Add a flag to disable the multiplier so we can be sure variants of the
+-- OSR8 fit in the device. The initial stack pointer is now available at mmu_sph and mmu_spl locations, HI and LO 
 -- bytes respectively, so the CPU process can read the correct stack location from memory and set the stack pointer
 -- after a jump to the initialization routine. This OSR8V3 is behind in modification from the one in P3041. Program
 -- a new IIS and test: seems to be working. We create P3035 Git repository and replace old version A13 with new
@@ -13,6 +14,12 @@
 
 -- V2.5, 13-DEC-24: Import improvements to PowerUp process from Blood Pressure Monitor firmware 
 -- (P3051). Disable RESET of RAM and ROM.
+
+-- [12-FEB-26] The interrupt manager in this code is flawed: it is vulnerable 
+-- to conflicts between RCK and TCK when we reset an interrupt bit. We 
+-- resolved these conflicts in P3041, and when we next work on this P3051 code
+-- we must implement the same resolution to avoide future instability.
+
 
 library ieee;  
 use ieee.std_logic_1164.all;
